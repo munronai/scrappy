@@ -1,7 +1,7 @@
 # Scrappy Whiteboard — API, CLI & Developer Experience (DX)
 
 > **Parent Map:** [ARCHITECTURE.md](../ARCHITECTURE.md)  
-> **Primary Source Files:** [src/server/index.ts](../src/server/index.ts), [src/cli/wb.ts](../src/cli/wb.ts), [src/mcp/server.ts](../src/mcp/server.ts)
+> **Primary Source Files:** [src/server/index.ts](../src/server/index.ts), [src/server/routes/](../src/server/routes/), [src/server/auth.ts](../src/server/auth.ts), [src/cli/wb.ts](../src/cli/wb.ts), [src/mcp/server.ts](../src/mcp/server.ts)
 
 ---
 
@@ -91,7 +91,7 @@ Runs over `StdioServerTransport` (`npm run mcp`) and exposes three tools:
 
 ## 5. Planned API & DX Evolution
 
-1. **Router Decomposition:** Split `src/server/index.ts` into domain routers under `src/server/routes/` (`boards.router.ts`, `ops.router.ts`, `prompts.router.ts`, `ingest.router.ts`, `icm.router.ts`) plus `src/server/auth.ts`.
+1. **Router Decomposition (Implemented):** `src/server/index.ts` mounts domain routers under `src/server/routes/` ([boards.ts](../src/server/routes/boards.ts), [ops.ts](../src/server/routes/ops.ts), [prompts.ts](../src/server/routes/prompts.ts), [ingest.ts](../src/server/routes/ingest.ts), [icm.ts](../src/server/routes/icm.ts)) with shared [auth.ts](../src/server/auth.ts) and [context.ts](../src/server/context.ts). See [SERVER_ROUTES.md](./SERVER_ROUTES.md).
 2. **Runtime Boundary Validation:** `POST /api/v1/boards/:name/ops` validates payloads with `OpsBatchRequestSchema` (returning structured `400` errors on invalid operations). Next: add Zod request body schemas to `/prompts` and `/ingest`.
 3. **OpenAPI 3.1 & Typed SDK:** Publish an OpenAPI spec at `/api/v1/docs` and extract shared API/CLI client logic into a typed `@scrappy/sdk` package.
 4. **Production Security Hardening:** Enforce non-default `SCRAPPY_AUTH_SECRET` when `NODE_ENV === 'production'`, migrate passcode hashing to `crypto.scrypt`, and scrub client-supplied API keys from logs.
