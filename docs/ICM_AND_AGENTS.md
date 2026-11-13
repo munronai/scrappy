@@ -56,5 +56,5 @@ Handles **Standalone API Mode** and local heuristic fallbacks:
 
 ## 5. Planned ICM & Agent Evolution
 
-1. **Async Write-Behind Debounce Queue:** Migrate `ICMAdapter` from synchronous `node:fs` calls (`writeFileSync`, `readFileSync`) to `node:fs/promises` behind a ~300ms debounced write queue so continuous drag bursts do not block the Node.js event loop.
+1. **Async Write-Behind Debounce Queue (Implemented):** `ICMAdapter.scheduleSaveBoard` coalesces rapid mutations via [`WriteQueue`](../src/icm/writeQueue.ts) (300ms idle threshold) and persists via `node:fs/promises` (`saveBoardToDiskAsync`), with graceful shutdown flushing in `src/server/index.ts`. See [ICM_WRITE_QUEUE.md](./ICM_WRITE_QUEUE.md).
 2. **Structured Pipeline Registry:** Deepen integration between `ICMArchitect` walk-tests and the client `PipelineStudioModal`.
