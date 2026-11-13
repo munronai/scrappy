@@ -280,8 +280,10 @@ sequenceDiagram
 │   │   └── validation.test.ts           # Unit tests for GraphOp Zod validation
 │   │
 │   ├── icm/                          # Disk storage & ICM Architect engine
-│   │   ├── adapter.ts                   # Option A node-per-file serialization & SHA-256 hashing
-│   │   └── architect.ts                 # Pipeline compiler, CONTEXT.md router & Cold-Agent Walk Test
+│   │   ├── adapter.ts                   # Option A node-per-file serialization, async save & SHA-256 hashing
+│   │   ├── architect.ts                 # Pipeline compiler, CONTEXT.md router & Cold-Agent Walk Test
+│   │   ├── writeQueue.ts                # Debounced 300ms async write-behind queue (WriteQueue)
+│   │   └── writeQueue.test.ts           # Unit tests for WriteQueue coalescing & ICMAdapter async flush
 │   │
 │   ├── mcp/                          # Model Context Protocol server
 │   │   └── server.ts                    # Stdio MCP tools (wb_get_context, wb_mutate_batch, wb_export_doc)
@@ -304,7 +306,8 @@ sequenceDiagram
 │   ├── REALTIME_AND_WEBSOCKETS.md    # WebSocket bus, Ably bridge, envelopes & concurrency
 │   ├── FRONTEND_UI.md                # React SPA, viewport/panning, layers & WidgetLibrary
 │   ├── CORE_ENGINE.md                # Domain model, GraphOp reducer, layout & slicing
-│   └── ICM_AND_AGENTS.md             # ICM Option A disk adapter, Architect & SmartAgent
+│   ├── ICM_AND_AGENTS.md             # ICM Option A disk adapter, Architect & SmartAgent
+│   └── ICM_WRITE_QUEUE.md            # Asynchronous debounced WriteQueue for ICMAdapter
 │
 ├── .agents/skills/                   # Antigravity agent skills
 │   ├── update-scrappy/SKILL.md       # /update-scrappy prompt processing skill
@@ -392,7 +395,7 @@ graph TD
 ### Key Architectural Directives
 1. **Modular Boundary Decomposition:** Keep `src/core/` pure and free of framework or UI styling concerns (`src/core/` is decomposed into `reducer.ts`, `layout.ts`, `slicing.ts`, `synthesis.ts`, `markdown.ts`, `tableStyles.ts`, `templates.ts`, `security.ts`, and `validation.ts`), and `src/client/` modals/widgets are decomposed into `src/client/components/overlays/modals/` and `src/client/widgets/`. Remaining large modules (`TopBar.tsx` and `src/server/index.ts`) should follow the same single-responsibility decomposition.
 2. **Bidirectional WebSocket Operations & Concurrency:** Evolve `/ws` to accept inbound `op.delta` envelopes with monotonic client sequence numbers and `baseVersion` optimistic concurrency preconditions, eliminating HTTP POST overhead during high-frequency collaboration.
-3. **Asynchronous Write-Behind Persistence:** Transition `ICMAdapter` disk writes to `node:fs/promises` behind a debounced write queue (e.g., 300ms coalesce window) so continuous drag/resize bursts never block the Node.js event loop or thrash disk I/O.
+3. **Asynchronous Write-Behind Persistence:** `ICMAdapter.scheduleSaveBoard` uses `WriteQueue` (`src/icm/writeQueue.ts`) and `node:fs/promises` (`saveBoardToDiskAsync`) behind a 300ms debounced coalesce window so continuous drag/resize bursts never block the Node.js event loop (see [docs/ICM_WRITE_QUEUE.md](./docs/ICM_WRITE_QUEUE.md)).
 4. **Runtime Boundary Validation (Zod) & DX:** `OpsBatchRequestSchema`, `GraphOpsBatchSchema`, and `validateGraphOpsBatch` (in `src/core/validation.ts`) are enforced on `POST /api/v1/boards/:name/ops`, `wb_mutate_batch` (MCP), `RealtimeBus` remote `op.delta` messages, and LLM-generated operations (`smartAgent.ts`). Next steps: extend Zod validation to `/prompts` and `/ingest`, and publish an OpenAPI 3.1 spec (`/api/v1/docs`) with a typed client SDK (`@scrappy/sdk`).
 5. **Agent Staging / Suggestion Diff Pattern:** Support a non-destructive preview/diff state for autonomous agent changesets (allowing users to Accept or Reject generated nodes before committing to canonical board state and disk).
 6. **Production Security Hardening Standards:** Require an explicit `SCRAPPY_AUTH_SECRET` in production (`NODE_ENV === 'production'`), migrate passcode hashing from unsalted SHA-256 to `crypto.scrypt`, and ensure client-supplied model API keys are never persisted in server access logs.
