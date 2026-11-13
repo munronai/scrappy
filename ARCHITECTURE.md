@@ -295,7 +295,10 @@ sequenceDiagram
 │   │   └── bus.test.ts                  # Multi-user, presence & auth test suite
 │   │
 │   ├── server/                       # HTTP API, WebSocket daemon & AI runner
-│   │   ├── index.ts                     # Express server, auth token exchange, security guards
+│   │   ├── routes/                      # Modular Express API v1 routers (boards, ops, prompts, ingest, icm, routes.test.ts)
+│   │   ├── auth.ts                      # HMAC capability tokens, passcode hashing & CORS allowlist checks
+│   │   ├── context.ts                   # Shared ServerContext interface & `:name` param slug validation
+│   │   ├── index.ts                     # Express app bootstrap, RealtimeBus & router mounting
 │   │   └── smartAgent.ts                # Standalone LLM execution (Gemini/Claude/OpenAI) & SVG generator
 │   │
 │   └── cli/                          # Command-line tools
@@ -307,6 +310,7 @@ sequenceDiagram
 │   ├── FRONTEND_UI.md                # React SPA, viewport/panning, layers & WidgetLibrary
 │   ├── CORE_ENGINE.md                # Domain model, GraphOp reducer, layout & slicing
 │   ├── ICM_AND_AGENTS.md             # ICM Option A disk adapter, Architect & SmartAgent
+│   └── SERVER_ROUTES.md              # Modular Express API v1 routers, auth & ServerContext
 │   └── ICM_WRITE_QUEUE.md            # Asynchronous debounced WriteQueue for ICMAdapter
 │
 ├── .agents/skills/                   # Antigravity agent skills
@@ -375,11 +379,11 @@ graph TD
     end
 
     subgraph ServerDomain["src/server/ (Application Layer)"]
-        App["app.ts<br/>(Express App Configuration)"]
-        ServerMain["index.ts<br/>(HTTP & WS Listener)"]
-        Routes["routes/<br/>├── boards.router.ts<br/>├── ops.router.ts<br/>├── prompts.router.ts<br/>├── ingest.router.ts<br/>└── icm.router.ts"]
+        ServerMain["index.ts<br/>(Express App & WS Listener)"]
+        Context["context.ts<br/>(ServerContext & Param Guard)"]
+        Routes["routes/<br/>├── boards.ts<br/>├── ops.ts<br/>├── prompts.ts<br/>├── ingest.ts<br/>└── icm.ts"]
         Auth["auth.ts<br/>(Token Verification & Passcode Security)"]
-        Agents["agents/<br/>├── modelService.ts<br/>├── promptSanitizer.ts<br/>└── vectorGraphics.ts"]
+        Agents["smartAgent.ts<br/>(LLM Providers & Vector SVG)"]
     end
 
     subgraph ClientDomain["src/client/ (UI & Presentation Layer)"]
@@ -393,7 +397,7 @@ graph TD
 ```
 
 ### Key Architectural Directives
-1. **Modular Boundary Decomposition:** Keep `src/core/` pure and free of framework or UI styling concerns (`src/core/` is decomposed into `reducer.ts`, `layout.ts`, `slicing.ts`, `synthesis.ts`, `markdown.ts`, `tableStyles.ts`, `templates.ts`, `security.ts`, and `validation.ts`), and `src/client/` modals/widgets are decomposed into `src/client/components/overlays/modals/` and `src/client/widgets/`. Remaining large modules (`TopBar.tsx` and `src/server/index.ts`) should follow the same single-responsibility decomposition.
+1. **Modular Boundary Decomposition:** Keep `src/core/` pure and free of framework or UI styling concerns (`src/core/` is decomposed into `reducer.ts`, `layout.ts`, `slicing.ts`, `synthesis.ts`, `markdown.ts`, `tableStyles.ts`, `templates.ts`, `security.ts`, and `validation.ts`), `src/client/` modals/widgets are decomposed into `src/client/components/overlays/modals/` and `src/client/widgets/`, and `src/server/` HTTP endpoints are split into `src/server/routes/` (`boards.ts`, `ops.ts`, `prompts.ts`, `ingest.ts`, `icm.ts`) with `auth.ts` and `context.ts` (see [docs/SERVER_ROUTES.md](./docs/SERVER_ROUTES.md)). Remaining large modules (`TopBar.tsx` and `smartAgent.ts`) should follow the same single-responsibility decomposition.
 2. **Bidirectional WebSocket Operations & Concurrency:** Evolve `/ws` to accept inbound `op.delta` envelopes with monotonic client sequence numbers and `baseVersion` optimistic concurrency preconditions, eliminating HTTP POST overhead during high-frequency collaboration.
 3. **Asynchronous Write-Behind Persistence:** `ICMAdapter.scheduleSaveBoard` uses `WriteQueue` (`src/icm/writeQueue.ts`) and `node:fs/promises` (`saveBoardToDiskAsync`) behind a 300ms debounced coalesce window so continuous drag/resize bursts never block the Node.js event loop (see [docs/ICM_WRITE_QUEUE.md](./docs/ICM_WRITE_QUEUE.md)).
 4. **Runtime Boundary Validation (Zod) & DX:** `OpsBatchRequestSchema`, `GraphOpsBatchSchema`, and `validateGraphOpsBatch` (in `src/core/validation.ts`) are enforced on `POST /api/v1/boards/:name/ops`, `wb_mutate_batch` (MCP), `RealtimeBus` remote `op.delta` messages, and LLM-generated operations (`smartAgent.ts`). Next steps: extend Zod validation to `/prompts` and `/ingest`, and publish an OpenAPI 3.1 spec (`/api/v1/docs`) with a typed client SDK (`@scrappy/sdk`).
