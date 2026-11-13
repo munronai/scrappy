@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run wb *)",
+      "Bash(npx tsx src/cli/wb.ts *)",
+      "Read(boards/**)",
+      "Write(boards/**)",
+      "Edit(boards/**)"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "scrappy-whiteboard",
+  "version": "0.1.0",
+  "description": "Modular, API-First Collaborative & Agentic Whiteboard (ICM + ICM-CCTV + Antigravity CLI)",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/server/index.ts",
+    "build": "vite build",
+    "start": "NODE_ENV=production tsx src/server/index.ts",
+    "wb": "tsx src/cli/wb.ts",
+    "mcp": "tsx src/mcp/server.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "ably": "^2.30.0",
+    "chokidar": "^4.0.3",
+    "cors": "^2.8.5",
+    "dompurify": "^3.2.4",
+    "express": "^4.21.2",
+    "lucide-react": "^0.469.0",
+    "mermaid": "^12.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/ws": "^8.5.13",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  }
+}

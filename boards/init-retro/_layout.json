@@ -1,0 +1,251 @@
+{
+  "id": "board-init-retro",
+  "name": "init-retro",
+  "title": "Initial Retro",
+  "version": 1,
+  "security": {
+    "mode": "public"
+  },
+  "sections": {
+    "sec-01-discovery": {
+      "id": "sec-01-discovery",
+      "slug": "01_discovery",
+      "title": "01. Discovery & Goals",
+      "description": "Core user problems, target personas, and launch objectives.",
+      "bounds": {
+        "x": 80,
+        "y": 100,
+        "width": 620,
+        "height": 500
+      },
+      "color": "#38bdf8",
+      "icmContextPath": "sections/01_discovery/CONTEXT.md"
+    },
+    "sec-02-architecture": {
+      "id": "sec-02-architecture",
+      "slug": "02_architecture",
+      "title": "02. Architecture & Flow",
+      "description": "End-to-end execution flow from user/agent input to ICM storage and canvas.",
+      "bounds": {
+        "x": 760,
+        "y": 100,
+        "width": 720,
+        "height": 500
+      },
+      "color": "#a855f7",
+      "icmContextPath": "sections/02_architecture/CONTEXT.md"
+    },
+    "sec-03-launch": {
+      "id": "sec-03-launch",
+      "slug": "03_launch_plan",
+      "title": "03. Launch Checklist & Integrations",
+      "description": "Action items, external webhook cards, and open risks.",
+      "bounds": {
+        "x": 1540,
+        "y": 100,
+        "width": 580,
+        "height": 500
+      },
+      "color": "#10b981",
+      "icmContextPath": "sections/03_launch_plan/CONTEXT.md"
+    }
+  },
+  "nodeGeometry": {
+    "node-goal-1": {
+      "position": {
+        "x": 110,
+        "y": 170
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      },
+      "style": {
+        "color": "#fef08a"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-1.md"
+    },
+    "node-goal-2": {
+      "position": {
+        "x": 400,
+        "y": 170
+      },
+      "size": {
+        "width": 260,
+        "height": 150
+      },
+      "style": {
+        "color": "#bbf7d0"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-2.md"
+    },
+    "node-goal-3": {
+      "position": {
+        "x": 240,
+        "y": 370
+      },
+      "size": {
+        "width": 280,
+        "height": 155
+      },
+      "style": {
+        "color": "#bfdbfe"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-3.md"
+    },
+    "node-flow-1": {
+      "position": {
+        "x": 800,
+        "y": 180
+      },
+      "size": {
+        "width": 220,
+        "height": 120
+      },
+      "style": {
+        "color": "#e9d5ff",
+        "shape": "pill"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-1.md"
+    },
+    "node-flow-2": {
+      "position": {
+        "x": 1180,
+        "y": 180
+      },
+      "size": {
+        "width": 240,
+        "height": 120
+      },
+      "style": {
+        "color": "#c7d2fe",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-2.md"
+    },
+    "node-flow-3": {
+      "position": {
+        "x": 990,
+        "y": 390
+      },
+      "size": {
+        "width": 250,
+        "height": 130
+      },
+      "style": {
+        "color": "#fbcfe8",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-3.md"
+    },
+    "node-data-1": {
+      "position": {
+        "x": 1580,
+        "y": 175
+      },
+      "size": {
+        "width": 280,
+        "height": 185
+      },
+      "style": {
+        "color": "#a7f3d0"
+      },
+      "type": "data_card",
+      "sectionId": "sec-03-launch",
+      "icmFilePath": "sections/03_launch_plan/nodes/node-data-1.md"
+    },
+    "node-suggest-1": {
+      "position": {
+        "x": 1190,
+        "y": 385
+      },
+      "size": {
+        "width": 245,
+        "height": 135
+      },
+      "style": {
+        "color": "#fde68a"
+      },
+      "type": "suggestion",
+      "sectionId": "sec-02-architecture",
+      "icmFilePath": "sections/02_architecture/nodes/node-suggest-1.md",
+      "suggestionMeta": {
+        "rationale": "Between step 2 (Agent execution) and step 3 (Export), ICM recommends a human-in-the-loop review step.",
+        "proposedEdges": [
+          {
+            "fromNodeId": "node-flow-2",
+            "toNodeId": "node-suggest-1",
+            "label": "proposes"
+          },
+          {
+            "fromNodeId": "node-suggest-1",
+            "toNodeId": "node-flow-3",
+            "label": "approves"
+          }
+        ]
+      }
+    }
+  },
+  "edges": {
+    "edge-1": {
+      "id": "edge-1",
+      "fromNodeId": "node-goal-1",
+      "toNodeId": "node-goal-2",
+      "label": "scoped by",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-2": {
+      "id": "edge-2",
+      "fromNodeId": "node-goal-2",
+      "toNodeId": "node-goal-3",
+      "label": "persisted via",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-3": {
+      "id": "edge-3",
+      "fromNodeId": "node-flow-1",
+      "toNodeId": "node-flow-2",
+      "label": "dispatches prompt",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-4": {
+      "id": "edge-4",
+      "fromNodeId": "node-flow-2",
+      "toNodeId": "node-flow-3",
+      "label": "synthesizes",
+      "style": "solid",
+      "directed": true
+    }
+  },
+  "pins": {
+    "pin-webhook-inbox": {
+      "id": "pin-webhook-inbox",
+      "label": "Webhook / Integration Drop Pin",
+      "position": {
+        "x": 1600,
+        "y": 410
+      },
+      "targetSectionId": "sec-03-launch"
+    }
+  },
+  "activeSelection": {
+    "nodeIds": []
+  },
+  "prompts": [],
+  "updatedAt": "2026-11-12T10:12:44.753Z"
+}

@@ -1,0 +1,24 @@
+{
+  "tools": {
+    "allowed": [
+      "run_command(npm run wb)",
+      "run_command(npx tsx src/cli/wb.ts)",
+      "run_command(npm test)",
+      "run_command(npm run build)",
+      "read_file",
+      "write_file",
+      "edit_file"
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run wb *)",
+      "Bash(npx tsx src/cli/wb.ts *)",
+      "Bash(npm test*)",
+      "Bash(npm run build*)",
+      "Read(boards/**)",
+      "Write(boards/**)",
+      "Edit(boards/**)"
+    ]
+  }
+}

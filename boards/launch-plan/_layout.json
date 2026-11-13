@@ -1,0 +1,760 @@
+{
+  "id": "board-launch-plan",
+  "name": "launch-plan",
+  "title": "Product Launch & Architecture Whiteboard",
+  "version": 580,
+  "security": {
+    "mode": "public"
+  },
+  "sections": {
+    "sec-01-discovery": {
+      "id": "sec-01-discovery",
+      "slug": "01_discovery",
+      "title": "01. Discovery & Goals",
+      "description": "Core user problems, target personas, and launch objectives.",
+      "bounds": {
+        "x": 12,
+        "y": 97,
+        "width": 898,
+        "height": 1192
+      },
+      "color": "#38bdf8",
+      "icmContextPath": "sections/01_discovery/CONTEXT.md"
+    },
+    "sec-02-architecture": {
+      "id": "sec-02-architecture",
+      "slug": "02_architecture",
+      "title": "02. Architecture & Flow",
+      "description": "End-to-end execution flow from user/agent input to ICM storage and canvas.",
+      "bounds": {
+        "x": 937,
+        "y": 77,
+        "width": 788,
+        "height": 455
+      },
+      "color": "#a855f7",
+      "icmContextPath": "sections/02_architecture/CONTEXT.md"
+    },
+    "sec-03-launch": {
+      "id": "sec-03-launch",
+      "slug": "03_launch_plan",
+      "title": "03. Launch Checklist & Integrations",
+      "description": "Action items, external webhook cards, and open risks.",
+      "bounds": {
+        "x": 1720,
+        "y": 100,
+        "width": 620,
+        "height": 470
+      },
+      "color": "#10b981",
+      "icmContextPath": "sections/03_launch_plan/CONTEXT.md"
+    },
+    "sec-04-new-icm-stage": {
+      "id": "sec-04-new-icm-stage",
+      "slug": "04_new_icm_stage",
+      "title": "04. New ICM Stage",
+      "description": "Stage contract synced to sections/<slug>/CONTEXT.md",
+      "bounds": {
+        "x": 2400,
+        "y": 100,
+        "width": 620,
+        "height": 470
+      },
+      "color": "#f59e0b",
+      "icmContextPath": "sections/04_new_icm_stage/CONTEXT.md"
+    },
+    "sec-23-023-new-icm-stage": {
+      "id": "sec-23-023-new-icm-stage",
+      "slug": "23_023_new_icm_stage",
+      "title": "023. New ICM Stage",
+      "description": "Drag header to move or drag corners to resize (scales locked cards).",
+      "bounds": {
+        "x": 14980,
+        "y": 100,
+        "width": 600,
+        "height": 500
+      },
+      "color": "#f59e0b",
+      "icmContextPath": "sections/23_023_new_icm_stage/CONTEXT.md"
+    },
+    "sec-24-024-new-icm-stage": {
+      "id": "sec-24-024-new-icm-stage",
+      "slug": "24_024_new_icm_stage",
+      "title": "024. New ICM Stage",
+      "description": "Drag header to move or drag corners to resize (scales locked cards).",
+      "bounds": {
+        "x": 15640,
+        "y": 100,
+        "width": 600,
+        "height": 500
+      },
+      "color": "#f59e0b",
+      "icmContextPath": "sections/24_024_new_icm_stage/CONTEXT.md"
+    },
+    "sec-25-025-new-icm-stage": {
+      "id": "sec-25-025-new-icm-stage",
+      "slug": "25_025_new_icm_stage",
+      "title": "025. New ICM Stage",
+      "description": "Drag header to move or drag corners to resize (scales locked cards).",
+      "bounds": {
+        "x": 16300,
+        "y": 100,
+        "width": 600,
+        "height": 500
+      },
+      "color": "#f59e0b",
+      "icmContextPath": "sections/25_025_new_icm_stage/CONTEXT.md"
+    },
+    "sec-09-new-icm-stage": {
+      "id": "sec-09-new-icm-stage",
+      "slug": "09_new_icm_stage",
+      "title": "09. New ICM Stage",
+      "description": "Drag header to move or drag corners to resize (scales locked cards).",
+      "bounds": {
+        "x": 2050,
+        "y": 1310,
+        "width": 600,
+        "height": 500
+      },
+      "color": "#38bdf8",
+      "icmContextPath": "sections/09_new_icm_stage/CONTEXT.md"
+    }
+  },
+  "nodeGeometry": {
+    "node-ai-lw6-1": {
+      "position": {
+        "x": 41,
+        "y": 155
+      },
+      "size": {
+        "width": 258,
+        "height": 120
+      },
+      "style": {
+        "color": "#bfdbfe",
+        "shape": "pill"
+      },
+      "type": "shape",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-ai-lw6-1.md"
+    },
+    "node-ai-lw7-2": {
+      "position": {
+        "x": 315,
+        "y": 155
+      },
+      "size": {
+        "width": 258,
+        "height": 120
+      },
+      "style": {
+        "color": "#bbf7d0",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-ai-lw7-2.md"
+    },
+    "node-ai-lw7-3": {
+      "position": {
+        "x": 592,
+        "y": 155
+      },
+      "size": {
+        "width": 258,
+        "height": 120
+      },
+      "style": {
+        "color": "#bfdbfe",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-ai-lw7-3.md"
+    },
+    "node-ai-lw7-4": {
+      "position": {
+        "x": 41,
+        "y": 290
+      },
+      "size": {
+        "width": 258,
+        "height": 120
+      },
+      "style": {
+        "color": "#bbf7d0",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-ai-lw7-4.md"
+    },
+    "node-checklist-i6hy": {
+      "position": {
+        "x": 495,
+        "y": 960
+      },
+      "size": {
+        "width": 374,
+        "height": 254
+      },
+      "style": {
+        "color": "#fef08a",
+        "shape": "rect"
+      },
+      "type": "checklist",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-checklist-i6hy.md"
+    },
+    "node-gap-n9s4": {
+      "position": {
+        "x": 368,
+        "y": 317
+      },
+      "size": {
+        "width": 263,
+        "height": 129
+      },
+      "style": {
+        "color": "#bbf7d0",
+        "shape": "rect"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-gap-n9s4.md"
+    },
+    "node-goal-1": {
+      "position": {
+        "x": 41,
+        "y": 425
+      },
+      "size": {
+        "width": 258,
+        "height": 131
+      },
+      "style": {
+        "color": "#fef08a",
+        "shape": "rect"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-1.md"
+    },
+    "node-goal-2": {
+      "position": {
+        "x": 501,
+        "y": 499
+      },
+      "size": {
+        "width": 284,
+        "height": 161
+      },
+      "style": {
+        "color": "#bbf7d0",
+        "shape": "rect"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-2.md"
+    },
+    "node-goal-3": {
+      "position": {
+        "x": 595,
+        "y": 737
+      },
+      "size": {
+        "width": 299,
+        "height": 170
+      },
+      "style": {
+        "color": "#bfdbfe",
+        "shape": "rect"
+      },
+      "type": "sticky",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-goal-3.md"
+    },
+    "node-mwc9jq3l-pd78": {
+      "position": {
+        "x": -12,
+        "y": 765
+      },
+      "size": {
+        "width": 476,
+        "height": 249
+      },
+      "style": {
+        "color": "#0f172a",
+        "shape": "rect"
+      },
+      "type": "image",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": false,
+      "icmFilePath": "sections/01_discovery/nodes/node-mwc9jq3l-pd78.md"
+    },
+    "node-mwdc3ono-9q0j": {
+      "position": {
+        "x": 773,
+        "y": 447
+      },
+      "size": {
+        "width": 300,
+        "height": 80
+      },
+      "style": {
+        "color": "#f8fafc",
+        "shape": "rect"
+      },
+      "type": "text",
+      "sectionId": "sec-01-discovery",
+      "lockedToSection": true,
+      "icmFilePath": "sections/01_discovery/nodes/node-mwdc3ono-9q0j.md"
+    },
+    "node-arch-workflow-graphic": {
+      "position": {
+        "x": 960,
+        "y": 803
+      },
+      "size": {
+        "width": 936,
+        "height": 474
+      },
+      "style": {
+        "color": "#0f172a",
+        "shape": "rect"
+      },
+      "type": "svg_graphic",
+      "sectionId": "sec-02-architecture",
+      "lockedToSection": true,
+      "icmFilePath": "sections/02_architecture/nodes/node-arch-workflow-graphic.md"
+    },
+    "node-flow-1": {
+      "position": {
+        "x": 975,
+        "y": 149
+      },
+      "size": {
+        "width": 279,
+        "height": 116
+      },
+      "style": {
+        "color": "#e9d5ff",
+        "shape": "pill"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "lockedToSection": true,
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-1.md"
+    },
+    "node-flow-2": {
+      "position": {
+        "x": 1363,
+        "y": 167
+      },
+      "size": {
+        "width": 305,
+        "height": 116
+      },
+      "style": {
+        "color": "#c7d2fe",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "lockedToSection": true,
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-2.md"
+    },
+    "node-flow-3": {
+      "position": {
+        "x": 975,
+        "y": 319
+      },
+      "size": {
+        "width": 318,
+        "height": 126
+      },
+      "style": {
+        "color": "#fbcfe8",
+        "shape": "rect"
+      },
+      "type": "shape",
+      "sectionId": "sec-02-architecture",
+      "lockedToSection": true,
+      "icmFilePath": "sections/02_architecture/nodes/node-flow-3.md"
+    },
+    "node-suggest-1": {
+      "position": {
+        "x": 1331,
+        "y": 319
+      },
+      "size": {
+        "width": 368,
+        "height": 160
+      },
+      "style": {
+        "color": "#fde68a",
+        "shape": "rect"
+      },
+      "type": "suggestion",
+      "sectionId": "sec-02-architecture",
+      "lockedToSection": true,
+      "icmFilePath": "sections/02_architecture/nodes/node-suggest-1.md",
+      "suggestionMeta": {
+        "rationale": "Between step 2 (Agent execution) and step 3 (Export), ICM recommends a human-in-the-loop review step.",
+        "proposedEdges": [
+          {
+            "fromNodeId": "node-flow-2",
+            "toNodeId": "node-suggest-1",
+            "label": "proposes"
+          },
+          {
+            "fromNodeId": "node-suggest-1",
+            "toNodeId": "node-flow-3",
+            "label": "approves"
+          }
+        ]
+      }
+    },
+    "node-data-1": {
+      "position": {
+        "x": 1750,
+        "y": 175
+      },
+      "size": {
+        "width": 280,
+        "height": 185
+      },
+      "style": {
+        "color": "#a7f3d0",
+        "shape": "rect"
+      },
+      "type": "data_card",
+      "sectionId": "sec-03-launch",
+      "lockedToSection": true,
+      "icmFilePath": "sections/03_launch_plan/nodes/node-data-1.md"
+    },
+    "node-lightmode-website-image": {
+      "position": {
+        "x": 4500,
+        "y": -1776
+      },
+      "size": {
+        "width": 2376,
+        "height": 1238
+      },
+      "style": {
+        "color": "#0f172a",
+        "shape": "rect"
+      },
+      "type": "image",
+      "sectionId": "sec-03-launch",
+      "lockedToSection": false,
+      "icmFilePath": "sections/03_launch_plan/nodes/node-lightmode-website-image.md"
+    },
+    "node-mwc4uwnz-iw06": {
+      "position": {
+        "x": 2030,
+        "y": 175
+      },
+      "size": {
+        "width": 317,
+        "height": 307
+      },
+      "style": {
+        "color": "#a7f3d0",
+        "shape": "rect"
+      },
+      "type": "data_card",
+      "sectionId": "sec-03-launch",
+      "lockedToSection": true,
+      "icmFilePath": "sections/03_launch_plan/nodes/node-mwc4uwnz-iw06.md"
+    },
+    "node-mwc4wa8s-wrqa": {
+      "position": {
+        "x": 2430,
+        "y": 175
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      },
+      "style": {
+        "color": "#99f6e4",
+        "shape": "rect"
+      },
+      "type": "sticky",
+      "sectionId": "sec-04-new-icm-stage",
+      "lockedToSection": true,
+      "icmFilePath": "sections/04_new_icm_stage/nodes/node-mwc4wa8s-wrqa.md"
+    },
+    "node-mwc4wzh4-yq8h": {
+      "position": {
+        "x": 2710,
+        "y": 175
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      },
+      "style": {
+        "color": "#c7d2fe",
+        "shape": "pill"
+      },
+      "type": "shape",
+      "sectionId": "sec-04-new-icm-stage",
+      "lockedToSection": true,
+      "icmFilePath": "sections/04_new_icm_stage/nodes/node-mwc4wzh4-yq8h.md"
+    }
+  },
+  "edges": {
+    "edge-1": {
+      "id": "edge-1",
+      "fromNodeId": "node-goal-1",
+      "toNodeId": "node-goal-2",
+      "label": "scoped by",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-3": {
+      "id": "edge-3",
+      "fromNodeId": "node-flow-1",
+      "toNodeId": "node-flow-2",
+      "label": "dispatches prompt",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-4": {
+      "id": "edge-4",
+      "fromNodeId": "node-flow-2",
+      "toNodeId": "node-flow-3",
+      "label": "synthesizes",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-node-goal-2-node-goal-3": {
+      "id": "edge-node-goal-2-node-goal-3",
+      "fromNodeId": "node-goal-2",
+      "toNodeId": "node-goal-3",
+      "label": "connects",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-node-ai-lw6-1-node-ai-lw7-2": {
+      "id": "edge-node-ai-lw6-1-node-ai-lw7-2",
+      "fromNodeId": "node-ai-lw6-1",
+      "toNodeId": "node-ai-lw7-2",
+      "label": "next",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-node-ai-lw7-2-node-ai-lw7-3": {
+      "id": "edge-node-ai-lw7-2-node-ai-lw7-3",
+      "fromNodeId": "node-ai-lw7-2",
+      "toNodeId": "node-ai-lw7-3",
+      "label": "next",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-node-ai-lw7-3-node-ai-lw7-4": {
+      "id": "edge-node-ai-lw7-3-node-ai-lw7-4",
+      "fromNodeId": "node-ai-lw7-3",
+      "toNodeId": "node-ai-lw7-4",
+      "label": "next",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-mwc2nlij-pjv": {
+      "id": "edge-mwc2nlij-pjv",
+      "fromNodeId": "node-goal-1",
+      "toNodeId": "node-gap-n9s4",
+      "label": "validates",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-mwc2nlij-wda": {
+      "id": "edge-mwc2nlij-wda",
+      "fromNodeId": "node-gap-n9s4",
+      "toNodeId": "node-goal-2",
+      "label": "clears",
+      "style": "solid",
+      "directed": true
+    },
+    "edge-node-mwc4wzh4-yq8h-node-mwc4wa8s-wrqa": {
+      "id": "edge-node-mwc4wzh4-yq8h-node-mwc4wa8s-wrqa",
+      "fromNodeId": "node-mwc4wzh4-yq8h",
+      "toNodeId": "node-mwc4wa8s-wrqa",
+      "label": "connects",
+      "style": "animated",
+      "directed": true
+    },
+    "edge-node-mwc4wa8s-wrqa-node-mwc4wzh4-yq8h": {
+      "id": "edge-node-mwc4wa8s-wrqa-node-mwc4wzh4-yq8h",
+      "fromNodeId": "node-mwc4wa8s-wrqa",
+      "toNodeId": "node-mwc4wzh4-yq8h",
+      "label": "connects",
+      "style": "animated",
+      "directed": true
+    }
+  },
+  "pins": {
+    "pin-webhook-inbox": {
+      "id": "pin-webhook-inbox",
+      "label": "Webhook / Integration Drop Pin",
+      "position": {
+        "x": 1600,
+        "y": 410
+      },
+      "targetSectionId": "sec-03-launch"
+    }
+  },
+  "activeSelection": {
+    "nodeIds": [],
+    "boundingBox": {
+      "x": 1805.1851900909173,
+      "y": 3570.0000777067985,
+      "width": 156.66666666666674,
+      "height": 1383.3333333333335
+    },
+    "updatedAt": "2026-11-12T12:28:49.790Z"
+  },
+  "prompts": [
+    {
+      "id": "prompt-mwc2llw4",
+      "boardName": "launch-plan",
+      "prompt": "Map launch process: 1. Finalize ICM schema -> 2. Test Antigravity CLI bridge -> 3. Enable Ably WebSockets",
+      "mode": "instant_local",
+      "status": "completed",
+      "selectedNodeIds": [],
+      "tokenEstimate": 1406,
+      "createdAt": "2026-11-11T12:03:26.356Z",
+      "completedAt": "2026-11-11T12:03:26.359Z",
+      "agentResponseSummary": "Created 4 connected nodes in \"01. Discovery & Goals\" from prompt (~1406 scoped tokens)."
+    },
+    {
+      "id": "prompt-mwc2n9s3",
+      "boardName": "launch-plan",
+      "prompt": "Find the missing gaps between steps in this region",
+      "mode": "instant_local",
+      "status": "completed",
+      "selectedNodeIds": [],
+      "tokenEstimate": 1909,
+      "createdAt": "2026-11-11T12:04:43.971Z",
+      "completedAt": "2026-11-11T12:04:43.972Z",
+      "agentResponseSummary": "Analyzed Full Board Context (~1909 tokens) and added a proposed gap card (\"Validation & Telemetry Gate\") with 1-click accept."
+    },
+    {
+      "id": "prompt-mwc2wgbp",
+      "boardName": "launch-plan",
+      "prompt": "Create a bug list as a set of interactive checkboxes. It must be possible to add new bugs to the list and remove existing bugs. When a box is checked the bug text should show as strikethrough. The first bug is \"The scope section cards are not resizable\"\"",
+      "mode": "instant_local",
+      "status": "completed",
+      "selectedNodeIds": [],
+      "tokenEstimate": 2107,
+      "createdAt": "2026-11-11T12:11:52.357Z",
+      "completedAt": "2026-11-11T12:19:36.145Z",
+      "agentResponseSummary": "Created interactive Bug List checklist card with add/remove & strikethrough support (and enabled section card resizing)"
+    },
+    {
+      "id": "prompt-mwc37ps6",
+      "boardName": "launch-plan",
+      "prompt": "Reorganize and tidy the board into ICM sections",
+      "mode": "instant_local",
+      "status": "completed",
+      "selectedNodeIds": [],
+      "tokenEstimate": 2212,
+      "createdAt": "2026-11-11T12:20:37.830Z",
+      "completedAt": "2026-11-11T12:20:37.832Z",
+      "agentResponseSummary": "Reorganized 14 nodes across 5 ICM sections and updated _layout.json."
+    },
+    {
+      "id": "prompt-mwc9hhsi",
+      "boardName": "launch-plan",
+      "prompt": "@scrappy create a shape with a set of checkboxes for a bug list. Allow adding/removing bugs to the list. checked boxes should show strikethrough for the bug text",
+      "mode": "icm",
+      "status": "completed",
+      "anchorPosition": {
+        "x": 1317,
+        "y": 710
+      },
+      "selectedNodeIds": [],
+      "tokenEstimate": 2770,
+      "createdAt": "2026-11-11T15:16:11.730Z",
+      "agentResponseSummary": "@scrappy created persistent Interactive Checklist card \"node-checklist-i6hy\" at (110, 855).",
+      "completedAt": "2026-11-11T15:16:43.751Z"
+    },
+    {
+      "id": "prompt-mwc9rdxd",
+      "boardName": "launch-plan",
+      "prompt": "@scrappy layout an illustrated flow for the Architecture & Flow section",
+      "mode": "icm",
+      "status": "completed",
+      "anchorPosition": {
+        "x": 984,
+        "y": 807
+      },
+      "selectedNodeIds": [],
+      "tokenEstimate": 56286,
+      "createdAt": "2026-11-11T15:23:53.282Z",
+      "agentResponseSummary": "@scrappy created an artistic SVG graphic illustration at (42, 999).",
+      "completedAt": "2026-11-11T15:23:56.720Z"
+    },
+    {
+      "id": "prompt-mwc9suz0",
+      "boardName": "launch-plan",
+      "prompt": "@scrappy create an illustrated workflow for the Architecture and Flow section",
+      "mode": "icm",
+      "status": "completed",
+      "anchorPosition": {
+        "x": 786,
+        "y": 996
+      },
+      "selectedNodeIds": [],
+      "tokenEstimate": 56287,
+      "createdAt": "2026-11-11T15:25:02.028Z",
+      "agentResponseSummary": "@scrappy created an artistic SVG graphic illustration at (42, 999).",
+      "completedAt": "2026-11-11T15:27:01.466Z"
+    },
+    {
+      "id": "prompt-mwca5qms",
+      "boardName": "launch-plan",
+      "prompt": "@scrappy create a graphic showing an illustrated workflow for the Architecture and Flow section",
+      "mode": "icm",
+      "status": "completed",
+      "anchorPosition": {
+        "x": 893,
+        "y": 960
+      },
+      "selectedNodeIds": [],
+      "tokenEstimate": 56287,
+      "createdAt": "2026-11-11T15:35:02.932Z",
+      "agentResponseSummary": "Created bespoke illustrated SVG workflow graphic (node-arch-workflow-graphic) for 02. Architecture & Flow",
+      "completedAt": "2026-11-11T15:37:50.536Z"
+    },
+    {
+      "id": "prompt-mwcapu8c",
+      "boardName": "launch-plan",
+      "prompt": "@scrappy generate an image of a light mode website design for a website that showcases the scrappy whiteboard app",
+      "mode": "icm",
+      "status": "completed",
+      "anchorPosition": {
+        "x": 715,
+        "y": 1810
+      },
+      "selectedNodeIds": [],
+      "tokenEstimate": 58611,
+      "createdAt": "2026-11-11T15:50:40.716Z",
+      "agentResponseSummary": "Generated Light Mode Website Design image card (node-lightmode-website-image) at (715, 1810)",
+      "completedAt": "2026-11-11T15:54:41.756Z"
+    }
+  ],
+  "updatedAt": "2026-11-12T14:08:14.035Z"
+}
