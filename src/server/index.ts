@@ -157,7 +157,7 @@ export async function createServer() {
     deltaOps?: GraphOp[]
   ): void {
     boardsCache.set(board.name, board);
-    icm.saveBoardToDisk(board);
+    icm.scheduleSaveBoard(board);
     if (deltaOps && deltaOps.length > 0) {
       bus.broadcastDelta(board.name, deltaOps, board.version, source, source);
     } else {
@@ -731,7 +731,15 @@ export async function createServer() {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  createServer().then(({ server }) => {
+  createServer().then(({ server, icm }) => {
+    const handleShutdown = async (signal: string) => {
+      console.log(`\n[Server] Received ${signal}, flushing pending ICM writes...`);
+      await icm.flushPendingWrites();
+      server.close(() => process.exit(0));
+    };
+    process.once('SIGINT', () => void handleShutdown('SIGINT'));
+    process.once('SIGTERM', () => void handleShutdown('SIGTERM'));
+
     const startListen = (port: number) => {
       server
         .listen(port, () => {

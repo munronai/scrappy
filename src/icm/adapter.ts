@@ -1,7 +1,9 @@
 import fs from 'node:fs';
+import fsPromises from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import chokidar, { FSWatcher } from 'chokidar';
+import { WriteQueue, WriteQueueStats } from './writeQueue.js';
 import {
   BoardDocument,
   BoardTemplateKind,
@@ -53,13 +55,28 @@ export interface ICMLayoutFile {
   updatedAt: string;
 }
 
+export interface ICMAdapterOptions {
+  /** Idle debounce threshold in ms for `scheduleSaveBoard`. Default: 300ms. */
+  writeDebounceMs?: number;
+}
+
+interface BoardWritePlan {
+  boardDir: string;
+  dirsToCreate: string[];
+  filesToWrite: Array<{ filePath: string; content: string }>;
+  activeNodeFiles: Set<string>;
+  activeSectionSlugs: Set<string>;
+}
+
 export class ICMAdapter {
   private boardsRoot: string;
   private watchers = new Map<string, FSWatcher>();
   private fileContentHashes = new Map<string, string>();
+  private writeQueue: WriteQueue;
 
-  constructor(boardsRoot: string) {
+  constructor(boardsRoot: string, options: ICMAdapterOptions = {}) {
     this.boardsRoot = boardsRoot;
+    this.writeQueue = new WriteQueue({ debounceMs: options.writeDebounceMs ?? 300 });
     fs.mkdirSync(this.boardsRoot, { recursive: true });
   }
 
@@ -69,6 +86,37 @@ export class ICMAdapter {
     fs.writeFileSync(absPath, content, 'utf-8');
     const hash = crypto.createHash('sha256').update(content).digest('hex');
     this.fileContentHashes.set(absPath, hash);
+  }
+
+  private async writeTrackedFileAsync(filePath: string, content: string): Promise<void> {
+    const absPath = path.resolve(filePath);
+    await fsPromises.mkdir(path.dirname(absPath), { recursive: true });
+    await fsPromises.writeFile(absPath, content, 'utf-8');
+    const hash = crypto.createHash('sha256').update(content).digest('hex');
+    this.fileContentHashes.set(absPath, hash);
+  }
+
+  /**
+   * Enqueues an asynchronous, debounced (300ms default) disk save for `board`.
+   * High-frequency drag/resize bursts coalesce into a single `node:fs/promises` write.
+   */
+  public scheduleSaveBoard(board: BoardDocument): void {
+    const snapshot = structuredClone(board);
+    this.writeQueue.enqueue(board.name, () => this.saveBoardToDiskAsync(snapshot));
+  }
+
+  /**
+   * Flushes any pending or in-flight async board writes.
+   */
+  public async flushPendingWrites(boardName?: string): Promise<void> {
+    await this.writeQueue.flush(boardName);
+  }
+
+  /**
+   * Returns observability counters for the async write-behind queue.
+   */
+  public getWriteQueueStats(): WriteQueueStats {
+    return this.writeQueue.getStats();
   }
 
   public getBoardDir(boardName: string): string {
@@ -291,6 +339,7 @@ export class ICMAdapter {
 
   public deleteBoard(boardName: string): boolean {
     const boardDir = this.getBoardDir(boardName);
+    this.writeQueue.cancel(boardName);
     if (this.watchers.has(boardName)) {
       this.watchers.get(boardName)?.close();
       this.watchers.delete(boardName);
@@ -302,24 +351,24 @@ export class ICMAdapter {
     return false;
   }
 
-  public saveBoardToDisk(board: BoardDocument): void {
+  private prepareBoardWritePlan(board: BoardDocument): BoardWritePlan {
     const boardDir = this.getBoardDir(board.name);
-    this.markWriting(board.name);
+    const dirsToCreate: string[] = [
+      boardDir,
+      path.join(boardDir, '_prompts'),
+      path.join(boardDir, 'sections', '00_scratchpad', 'nodes'),
+    ];
+    const filesToWrite: Array<{ filePath: string; content: string }> = [];
 
-    fs.mkdirSync(boardDir, { recursive: true });
-    fs.mkdirSync(path.join(boardDir, '_prompts'), { recursive: true });
-
-    // 1. Write Section directories & CONTEXT.md files (ICM Stage Contracts)
-    const validSectionDirs = new Set<string>(['00_scratchpad']);
+    // 1. Section directories & CONTEXT.md files (ICM Stage Contracts)
     for (const sec of Object.values(board.sections)) {
       const safeSlug = sanitizePathSlug(sec.slug, 'section');
-      validSectionDirs.add(safeSlug);
       const secDir = path.resolve(boardDir, 'sections', safeSlug);
       if (!secDir.startsWith(path.resolve(boardDir) + path.sep)) {
         continue;
       }
       const nodesDir = path.join(secDir, 'nodes');
-      fs.mkdirSync(nodesDir, { recursive: true });
+      dirsToCreate.push(nodesDir);
 
       const contextPath = path.join(secDir, 'CONTEXT.md');
       const secNodes = Object.values(board.nodes).filter((n) => n.sectionId === sec.id);
@@ -338,13 +387,10 @@ export class ICMAdapter {
         ),
         '',
       ].join('\n');
-      this.writeTrackedFile(contextPath, contextMd);
+      filesToWrite.push({ filePath: contextPath, content: contextMd });
     }
 
-    // Ensure scratchpad exists
-    fs.mkdirSync(path.join(boardDir, 'sections', '00_scratchpad', 'nodes'), { recursive: true });
-
-    // 2. Option A: Write one Markdown file per Node (`sections/<slug>/nodes/<id>.md`)
+    // 2. Option A: One Markdown file per Node (`sections/<slug>/nodes/<id>.md`)
     const activeNodeFiles = new Set<string>();
     const nodeGeometry: ICMLayoutFile['nodeGeometry'] = {};
 
@@ -363,7 +409,7 @@ export class ICMAdapter {
       }
 
       const serialized = this.serializeNodeMarkdown(node, safeSecSlug);
-      this.writeTrackedFile(absNodePath, serialized);
+      filesToWrite.push({ filePath: absNodePath, content: serialized });
       activeNodeFiles.add(absNodePath);
 
       nodeGeometry[node.id] = {
@@ -378,46 +424,12 @@ export class ICMAdapter {
       };
     }
 
-    // Clean up deleted node markdown files and deleted section directories
     const activeSectionSlugs = new Set<string>(
       Object.values(board.sections).map((s) => s.slug)
     );
     activeSectionSlugs.add('00_scratchpad');
 
-    const sectionsDir = path.join(boardDir, 'sections');
-    if (fs.existsSync(sectionsDir)) {
-      for (const secEntry of fs.readdirSync(sectionsDir, { withFileTypes: true })) {
-        if (!secEntry.isDirectory()) continue;
-        const secSlug = secEntry.name;
-        const secPath = path.join(sectionsDir, secSlug);
-
-        // If the section was deleted from the board, purge its directory and CONTEXT.md
-        if (!activeSectionSlugs.has(secSlug)) {
-          try {
-            fs.rmSync(secPath, { recursive: true, force: true });
-          } catch {
-            // ignore
-          }
-          continue;
-        }
-
-        const nodesDir = path.join(secPath, 'nodes');
-        if (!fs.existsSync(nodesDir)) continue;
-        for (const f of fs.readdirSync(nodesDir)) {
-          if (!f.endsWith('.md')) continue;
-          const full = path.join(nodesDir, f);
-          if (!activeNodeFiles.has(full)) {
-            try {
-              fs.unlinkSync(full);
-            } catch {
-              // ignore
-            }
-          }
-        }
-      }
-    }
-
-    // 3. Write `_layout.json` (ICM-CCTV Spatial Metadata)
+    // 3. `_layout.json` (ICM-CCTV Spatial Metadata)
     const layoutData: ICMLayoutFile = {
       id: board.id,
       name: board.name,
@@ -432,18 +444,122 @@ export class ICMAdapter {
       prompts: board.prompts,
       updatedAt: board.updatedAt,
     };
-    this.writeTrackedFile(
-      path.join(boardDir, '_layout.json'),
-      JSON.stringify(layoutData, null, 2)
+    filesToWrite.push({
+      filePath: path.join(boardDir, '_layout.json'),
+      content: JSON.stringify(layoutData, null, 2),
+    });
+
+    // 4. `BOARD_MAP.md` & `_prompts/ACTIVE_PROMPT.md`
+    filesToWrite.push({
+      filePath: path.join(boardDir, 'BOARD_MAP.md'),
+      content: this.generateBoardMapMarkdown(board),
+    });
+    filesToWrite.push({
+      filePath: path.join(boardDir, '_prompts', 'ACTIVE_PROMPT.md'),
+      content: this.buildActivePromptContract(board),
+    });
+
+    return {
+      boardDir,
+      dirsToCreate,
+      filesToWrite,
+      activeNodeFiles,
+      activeSectionSlugs,
+    };
+  }
+
+  public async saveBoardToDiskAsync(board: BoardDocument): Promise<void> {
+    const plan = this.prepareBoardWritePlan(board);
+    this.markWriting(board.name);
+
+    await Promise.all(
+      plan.dirsToCreate.map((dir) => fsPromises.mkdir(dir, { recursive: true }))
     );
 
-    // 4. Write `BOARD_MAP.md` & Top-Level ICM Architect Routing `CONTEXT.md` + `pipelines/*`
-    ensureICMArchitectWorkspace(boardDir, board);
-    const boardMapMd = this.generateBoardMapMarkdown(board);
-    this.writeTrackedFile(path.join(boardDir, 'BOARD_MAP.md'), boardMapMd);
+    await Promise.all(
+      plan.filesToWrite.map((f) => this.writeTrackedFileAsync(f.filePath, f.content))
+    );
 
-    // 5. Write `_prompts/ACTIVE_PROMPT.md` if there's an active/latest prompt
-    this.writeActivePromptContract(board);
+    // Clean up deleted node markdown files and deleted section directories
+    const sectionsDir = path.join(plan.boardDir, 'sections');
+    try {
+      const secEntries = await fsPromises.readdir(sectionsDir, { withFileTypes: true });
+      for (const secEntry of secEntries) {
+        if (!secEntry.isDirectory()) continue;
+        const secSlug = secEntry.name;
+        const secPath = path.join(sectionsDir, secSlug);
+
+        if (!plan.activeSectionSlugs.has(secSlug)) {
+          await fsPromises.rm(secPath, { recursive: true, force: true }).catch(() => {});
+          continue;
+        }
+
+        const nodesDir = path.join(secPath, 'nodes');
+        try {
+          const files = await fsPromises.readdir(nodesDir);
+          await Promise.all(
+            files
+              .filter((f) => f.endsWith('.md') && !plan.activeNodeFiles.has(path.join(nodesDir, f)))
+              .map((f) => fsPromises.unlink(path.join(nodesDir, f)).catch(() => {}))
+          );
+        } catch {
+          // nodesDir may not exist yet
+        }
+      }
+    } catch {
+      // sectionsDir may not exist yet
+    }
+
+    ensureICMArchitectWorkspace(plan.boardDir, board);
+  }
+
+  public saveBoardToDisk(board: BoardDocument): void {
+    const plan = this.prepareBoardWritePlan(board);
+    this.markWriting(board.name);
+
+    for (const dir of plan.dirsToCreate) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    for (const file of plan.filesToWrite) {
+      this.writeTrackedFile(file.filePath, file.content);
+    }
+
+    const sectionsDir = path.join(plan.boardDir, 'sections');
+    if (fs.existsSync(sectionsDir)) {
+      for (const secEntry of fs.readdirSync(sectionsDir, { withFileTypes: true })) {
+        if (!secEntry.isDirectory()) continue;
+        const secSlug = secEntry.name;
+        const secPath = path.join(sectionsDir, secSlug);
+
+        // If the section was deleted from the board, purge its directory and CONTEXT.md
+        if (!plan.activeSectionSlugs.has(secSlug)) {
+          try {
+            fs.rmSync(secPath, { recursive: true, force: true });
+          } catch {
+            // ignore
+          }
+          continue;
+        }
+
+        const nodesDir = path.join(secPath, 'nodes');
+        if (!fs.existsSync(nodesDir)) continue;
+        for (const f of fs.readdirSync(nodesDir)) {
+          if (!f.endsWith('.md')) continue;
+          const full = path.join(nodesDir, f);
+          if (!plan.activeNodeFiles.has(full)) {
+            try {
+              fs.unlinkSync(full);
+            } catch {
+              // ignore
+            }
+          }
+        }
+      }
+    }
+
+    // Write Top-Level ICM Architect Routing `CONTEXT.md` + `pipelines/*`
+    ensureICMArchitectWorkspace(plan.boardDir, board);
   }
 
   public loadBoardFromDisk(boardName: string): BoardDocument {
@@ -821,9 +937,7 @@ export class ICMAdapter {
     return lines.join('\n');
   }
 
-  private writeActivePromptContract(board: BoardDocument): void {
-    const boardDir = this.getBoardDir(board.name);
-    const promptPath = path.join(boardDir, '_prompts', 'ACTIVE_PROMPT.md');
+  private buildActivePromptContract(board: BoardDocument): string {
     const latestPending =
       [...board.prompts]
         .reverse()
@@ -831,7 +945,7 @@ export class ICMAdapter {
       board.prompts[board.prompts.length - 1];
 
     if (!latestPending) {
-      const idleMd = [
+      return [
         `# Active @scrappy Prompt Queue (\`${board.name}\`)`,
         '',
         `> **Status:** \`IDLE\` (No pending @scrappy prompts in queue)`,
@@ -844,8 +958,6 @@ export class ICMAdapter {
         `npm run wb -- add-node --board ${board.name} --title "New Idea" --body "Details..." --section sec-01-discovery`,
         '```',
       ].join('\n');
-      this.writeTrackedFile(promptPath, idleMd);
-      return;
     }
 
     const slice = extractSpatialSlice(board, {
@@ -904,7 +1016,7 @@ export class ICMAdapter {
           ? `🎯 GOVERNED ICM PIPELINE: ${activePipeline.title} (${activePipeline.id})`
           : '🧠 AD-HOC AGENT DECISION (Freeform @scrappy)';
 
-    const contractMd = [
+    return [
       `# 🎯 ACTIVE @scrappy PROMPT FOR \`/update-scrappy\` (\`agy\`)`,
       '',
       `- **Prompt ID:** \`${latestPending.id}\``,
@@ -972,7 +1084,5 @@ export class ICMAdapter {
       `npm run wb -- resolve-prompt --board ${board.name} --prompt-id ${latestPending.id} --summary "Fulfilled @scrappy prompt via /update-scrappy"`,
       '```',
     ].join('\n');
-
-    this.writeTrackedFile(promptPath, contractMd);
   }
 }
